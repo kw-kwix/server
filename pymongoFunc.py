@@ -57,7 +57,7 @@ def pd_to_dic(df):
 # 6. mongodb to pandas
 def dic_to_pd(dic):
     return pd.DataFrame.from_records(dic)
-###################
+##################
 
 # 받는 형식을 li나 dict이 아닌 형태로 변환해주는 함수
 # 넣는 형식을 dict이나 li가 아닌 pandas로 변환
