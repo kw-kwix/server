@@ -12,11 +12,13 @@ def dic_to_pd(dic):
     return pd.DataFrame.from_records(dic)
 
 
-conn=MongoClient('localhost', 27017)    #db 연결
+client = MongoClient("mongodb+srv://KWIX:KWIX1234!@cluster0.sqcy3o3.mongodb.net/?retryWrites=true&w=majority")
+KWIX = client.KWIX    #db 연결
+KWIX.userInfo.drop()
 
 pd_data = pd.read_csv("user.csv")
 dic_data=pd_to_dic(pd_data)
 
-data=conn.web.Data  #conn.db.table 접근
+data=KWIX.recommendData  #conn.db.table 접근
 
 data.insert_many(dic_data)  #table에 데이터 추가
