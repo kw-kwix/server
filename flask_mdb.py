@@ -62,33 +62,34 @@ def register():
             KWIX.loginInfo.insert_one(user)
             KWIX.userInfo.insert_one(userInfo)
             return redirect('/')
-        
-@app.route('/login', methods=['POST', 'GET'])       #로그인
+
+
+@app.route('/login', methods=['POST', 'GET'])  # 로그인
 def login():
-    userid = session.get('email',None)
+    userid = session.get('email', None)
     if request.method == 'GET':
         if userid is not None:
             return redirect('/')
         else:
-            return Response(jsonify({"status" : 200}), 200)
+            return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
         # if request.is_json():
-            data = request.get_json()
-            email = data['email']
-            print(data)
-            print(email)
-            pw = data['password']
-            user=list(KWIX.loginInfo.find({'email' : email}))
-            print(user)
-            if len(user) == 0:      #loginInfo(table)에 동일한 email이 존재하지 않는다면
-                return Response(jsonify({"status" : 403}), 403)
-            elif user[0]['password']==pw:
-                session['email']=email      #로그인 성공 시 session에 email 저장
-                return jsonify(message="success"), 200
-            else:
-                return Response(jsonify({"status" : 403}), 403)
-            
-            
+        data = request.get_json()
+        email = data['email']
+        print(data)
+        print(email)
+        pw = data['password']
+        user = list(KWIX.loginInfo.find({'email': email}))
+        print(user)
+        if len(user) == 0:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
+            return Response(jsonify({"status": 403}), 403)
+        elif user[0]['password'] == pw:
+            session['email'] = email  # 로그인 성공 시 session에 email 저장
+            return jsonify(message="success"), 200
+        else:
+            return Response(jsonify({"status": 403}), 403)
+
+
 # @app.route('/login', methods=['POST', 'GET'])       #로그인
 # def login():
 #     userid = session.get('email',None)

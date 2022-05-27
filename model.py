@@ -28,6 +28,6 @@ def input(height, weight, sex, bmi, proficiency):
 
 def predict(x):
 
-    model: Model = load_model("chest_model.h5")
-    y = model.predict(x)
-    return y
+   model: Model = load_model("chest_model.h5")
+   y = model.predict(x)
+   return y
