@@ -1,46 +1,47 @@
-from flask import Flask, request, session, render_template, redirect, Response, jsonify
+from flask import Flask, request, session, redirect, Response, jsonify
 from pymongo.mongo_client import MongoClient
-from wsgiref.util import request_uri
 from config import MONGO_URL
 from flask_cors import CORS
 
-app=Flask(__name__)
+app = Flask(__name__)
 CORS(app)
-app.secret_key=b'aaa!111'
+app.secret_key = b'aaa!111'
 
-client = MongoClient(MONGO_URL)  
-KWIX = client.KWIX  #db 접근
+client = MongoClient(MONGO_URL)
+KWIX = client.KWIX  # db 접근
+
 
 @app.route('/')
 def mainpage():
-    userid = session.get('email',None)
-    return Response(jsonify({"status" : 200}), 200) # jsonify({"status" : 200})
+    userid = session.get('email', None)
+    return Response(jsonify({"status": 200}), 200)  # jsonify({"status" : 200})
 
 
-@app.route("/sign_up", methods=['POST', 'GET'])     #회원가입
+@app.route("/sign_up", methods=['POST', 'GET'])  # 회원가입
 def sign_up():
-    error=None
-    userid = session.get('email',None)
+    error = None
+    userid = session.get('email', None)
     if request.method == 'GET':
         if userid is not None:
             return redirect('/')
         else:
-            return Response(jsonify({"status" : 200}), 200)
+            return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
-        userInfo={'id' : None, 'height' : None, 'weight' : None, 'sex' : None, 'age' : None, 'bmi' : None, 'during' : None}
-
-        user = request.get_json()       
-        userInfo['id']=user['id']
+        userInfo = {'id': None, 'height': None, 'weight': None,
+                    'sex': None, 'age': None, 'bmi': None, 'during': None}
+        user = request.get_json()
+        userInfo['id'] = user['id']
         userInfo['sex'] = user['sex']
         if not(user['name'] and user['id'] and user['birthdayDate'] and user['password'] and user['email'] and user['phoneNumber']):
             return Response(jsonify({"status": 403}), 403)
-        elif len(list(KWIX.loginInfo.find({'id' : user['id']}))) != 0:
+        elif len(list(KWIX.loginInfo.find({'id': user['id']}))) != 0:
             return Response(jsonify({"status": 403}), 403)
-        elif len(list(KWIX.loginInfo.find({'email' : user['email']}))) != 0:
+        elif len(list(KWIX.loginInfo.find({'email': user['email']}))) != 0:
             return Response(jsonify({"status": 403}), 403)
         else:
-            KWIX.loginInfo.insert_one(user) #회원가입에 필요한 정보를 loginInfo(table)에 저장
-            KWIX.userInfo.insert_one(userInfo)  #사용자 정보를 userInfo(table)에 저장
+            # 회원가입에 필요한 정보를 loginInfo(table)에 저장
+            KWIX.loginInfo.insert_one(user)
+            KWIX.userInfo.insert_one(userInfo)  # 사용자 정보를 userInfo(table)에 저장
             return jsonify(message="success"), 200
 
 
@@ -53,7 +54,6 @@ def login():
         else:
             return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
-        # if request.is_json():
         data = request.get_json()
         email = data['email']
         print(data)
@@ -68,45 +68,57 @@ def login():
             return jsonify(message="success"), 200
         else:
             return Response(jsonify({"status": 403}), 403)
-    
-@app.route('/logout')       #로그아웃
+
+
+@app.route('/logout')  # 로그아웃
 def logout():
-    session.pop('email', None)      #session에서 email 제거
+    session.pop('email', None)  # session에서 email 제거
     return redirect('/')
 
 
-@app.route("/input", methods=['POST', 'GET'])       #유저 정보를 받음
+@app.route("/input", methods=['POST', 'GET'])  # 유저 정보를 받음
 def input():
-    userid = session.get('email',None)
+    userid = session.get('email', None)
     if request.method == 'GET':
         if userid is None:
             return redirect('/login')
         else:
-            return Response(jsonify({"status" : 200}), 200)
+            return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
-        user={}
-        userInfo = request.get_json()
-        if not(userInfo['age'] and userInfo['height'] and userInfo['weight']):
-            return Response(jsonify({"status" : 403}), 403)
+        userInfo = {}
+        userInfo['age'] = request.form.get('ageInput')
+        userInfo['sex'] = request.form.get('inlineRadioOptions')
+        userInfo['height'] = request.form.get('heightInput')
+        userInfo['weight'] = request.form.get('weightInput')
+        userInfo['exercise_level'] = request.form.get('exercise_level')
+        j = 0
+        for i in range(3):
+            k = i+1
+            st = 'scales' + str(k)
+            if request.form.get(st) == 'on':
+                if i == 0:
+                    j = j + 1
+                else:
+                    j = j + 2 * i
+        userInfo['part'] = j  # 2진수로 받음
+        if not(userInfo['age'] and userInfo['height'] and userInfo['weight'] and userInfo['exercise_level']):
+            return Response(jsonify({"status": 403}), 403)
         else:
-            user['age']=userInfo['age']
-            user['height']=userInfo['height']
-            user['weight']=userInfo['weight']
-            user=list(KWIX.loginInfo.find({'email' : userid}))
-            KWIX.userInfo.update_one({'id' : user[0]['id']},{'$set':user})
-            return jsonify(message="success"), 200
+            user = list(KWIX.loginInfo.find({'Email': userid}))
+            KWIX.userInfo.update_one({'id': user[0]['id']}, {'$set': userInfo})
+            return redirect('/recommend')
 
 
-@app.route('/recommend')    #recommend.html과 연결
+@app.route('/recommend')  # recommend.html과 연결
 def recommend():
-    userid = session.get('email',None)
+    userid = session.get('email', None)
     if request.method == 'GET':
         if userid is None:
             return redirect('/login')
         else:
-            return Response(jsonify({"status" : 200}), 200)
-    return Response(jsonify({"status" : 200}), 200)
+            return Response(jsonify({"status": 200}), 200)
+    return Response(jsonify({"status": 200}), 200)
 
-        
+
 if __name__ == '__main__':
     app.run(debug=True)
