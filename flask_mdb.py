@@ -49,7 +49,7 @@ def login():
 
 @app.route('/logout')  # 로그아웃
 def logout():
-    return redirect('/')
+    return jsonify(message="success"), 200
 
 
 @app.route("/input", methods=['POST', 'GET'])  # 유저 정보를 받음
