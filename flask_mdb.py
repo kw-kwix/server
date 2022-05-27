@@ -59,6 +59,8 @@ def input():
         userInfo = request.get_json()
         if not(userInfo['age'] and userInfo['height'] and userInfo['weight']):
             return jsonify(message="정보를 모두 입력하세요."), 403
+        elif userInfo.get("email") is None:
+            return jsonify(message="로그인이 필요합니다."), 403
         else:
             user['age'] = userInfo['age']
             user['height'] = userInfo['height']
