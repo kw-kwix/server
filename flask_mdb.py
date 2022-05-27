@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, Response, jsonify
+from flask import Flask, request, redirect, Response, jsonify
 from pymongo.mongo_client import MongoClient
 from config import MONGO_URL
 from flask_cors import CORS
@@ -11,21 +11,8 @@ client = MongoClient(MONGO_URL)
 KWIX = client.KWIX  # db 접근
 
 
-@app.route('/')
-def mainpage():
-    userid = session.get('email', None)
-    return Response(jsonify({"status": 200}), 200)  # jsonify({"status" : 200})
-
-
 @app.route("/sign_up", methods=['POST', 'GET'])  # 회원가입
 def sign_up():
-    error = None
-    userid = session.get('email', None)
-    if request.method == 'GET':
-        if userid is not None:
-            return redirect('/')
-        else:
-            return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
         userInfo = {'id': None, 'height': None, 'weight': None,
                     'sex': None, 'age': None, 'bmi': None, 'during': None}
@@ -47,12 +34,6 @@ def sign_up():
 
 @app.route('/login', methods=['POST', 'GET'])  # 로그인
 def login():
-    userid = session.get('email', None)
-    if request.method == 'GET':
-        if userid is not None:
-            return redirect('/')
-        else:
-            return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
         data = request.get_json()
         email = data['email']
@@ -64,7 +45,6 @@ def login():
         if len(user) == 0:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
             return jsonify(message="이메일 주소가 없습니다."), 403
         elif user[0]['password'] == pw:
-            session['email'] = email  # 로그인 성공 시 session에 email 저장
             return jsonify(message="success"), 200
         else:
             return jsonify(message="비밀번호가 틀렸습니다."), 403
@@ -72,7 +52,6 @@ def login():
 
 @app.route('/logout')  # 로그아웃
 def logout():
-    session.pop('email', None)  # session에서 email 제거
     return redirect('/')
 
 
@@ -96,13 +75,8 @@ def input():
 
 @app.route('/recommend')  # recommend.html과 연결
 def recommend():
-    userid = session.get('email', None)
     if request.method == 'GET':
-        if userid is None:
-            return redirect('/login')
-        else:
-            return Response(jsonify({"status": 200}), 200)
-    return Response(jsonify({"status": 200}), 200)
+        return Response(jsonify({"status": 200}), 200)
 
 
 if __name__ == '__main__':
