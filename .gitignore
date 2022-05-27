@@ -3,3 +3,5 @@ static
 templates
 pymongoFunc.py
 user.csv
+.env
+test.ipynb
