@@ -10,7 +10,8 @@ app=Flask(__name__)
 app.secret_key=b'aaa!111'
 
 mongodb_url = os.environ.get("mongodb_url")
-client = MongoClient("mongodb+srv://KWIX:KWIX1234!@cluster0.sqcy3o3.mongodb.net/?retryWrites=true&w=majority")  
+print(type(mongodb_url))
+client = MongoClient(mongodb_url)  
 KWIX = client.KWIX  #db 접근
 
 @app.route('/')
@@ -73,31 +74,45 @@ def login():
         else:
             return Response(jsonify({"status" : 200}), 200)
     if request.method == 'POST':
-        if request.is_json():
+        # if request.is_json():
             data = request.get_json()
             email = data['email']
+            print(data)
+            print(email)
             pw = data['password']
-            user=list(KWIX.loginInfo.find({'Email' : email}))
+            user=list(KWIX.loginInfo.find({'email' : email}))
+            print(user)
             if len(user) == 0:      #loginInfo(table)에 동일한 email이 존재하지 않는다면
                 return Response(jsonify({"status" : 403}), 403)
             elif user[0]['password']==pw:
                 session['email']=email      #로그인 성공 시 session에 email 저장
-                return redirect('/')
+                return jsonify(message="success"), 200
             else:
                 return Response(jsonify({"status" : 403}), 403)
-        # email = request.form['emailInput']
-        # pw = request.form.get("pwInput", type=str)
-        # #conn=mgf.connect_mongo(db='web')        #mongodb 접속
-        # #user=list(mgf.get_many_data(conn, 'web', 'loginInfo', {'Email' : email}))       #loginInfo(table)에서 입력받은 email 정보 받기
-        # user=list(KWIX.loginInfo.find({'Email' : email}))
-        # if len(user) == 0:      #loginInfo(table)에 동일한 email이 존재하지 않는다면
-        #     return Response(jsonify({"status" : 403}), 403)
-        # elif user[0]['password']==pw:
-        #     session['email']=email      #로그인 성공 시 session에 email 저장
-        #     return redirect('/')
-        # else:
-        #     return Response(jsonify({"status" : 403}), 403)
-    
+            
+            
+# @app.route('/login', methods=['POST', 'GET'])       #로그인
+# def login():
+#     userid = session.get('email',None)
+#     if request.method == 'GET':
+#         if userid is not None:
+#             return redirect('/')
+#         else:
+#             return Response(jsonify({"status" : 200}), 200)
+#     if request.method == 'POST':
+#         if request.is_json():
+#             data = request.get_json()
+#             email = data['email']
+#             pw = data['password']
+#             user=list(KWIX.loginInfo.find({'Email' : email}))
+#             if len(user) == 0:      #loginInfo(table)에 동일한 email이 존재하지 않는다면
+#                 return Response(jsonify({"status" : 403}), 403)
+#             elif user[0]['password']==pw:
+#                 session['email']=email      #로그인 성공 시 session에 email 저장
+#                 return redirect('/')
+#             else:
+#                 return Response(jsonify({"status" : 403}), 403)
+
     
 @app.route('/logout')       #로그아웃
 def logout():
