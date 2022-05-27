@@ -1,15 +1,15 @@
 from flask import Flask, request, session, render_template, redirect, Response, jsonify
 from pymongo.mongo_client import MongoClient
 from wsgiref.util import request_uri
-#import pymongoFunc as mgf
 import os
+from config import MONGO_URL
+
 
 app=Flask(__name__)
 
 app.secret_key=b'aaa!111'
 
-mongodb_url = os.environ.get("mongodb_url")
-client = MongoClient(mongodb_url)  
+client = MongoClient(MONGO_URL)  
 KWIX = client.KWIX  #db 접근
 
 @app.route('/')

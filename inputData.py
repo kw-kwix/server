@@ -1,7 +1,9 @@
-#user.csv를 table에 추가하는 파일
+#user.csv를 table에 추가하는 코드
 
 from pymongo.mongo_client import MongoClient
 import pandas as pd
+import os
+from config import MONGO_URL
 
 # pandas to mongodb
 def pd_to_dic(df):
@@ -11,8 +13,7 @@ def pd_to_dic(df):
 def dic_to_pd(dic):
     return pd.DataFrame.from_records(dic)
 
-
-client = MongoClient("mongodb+srv://KWIX:KWIX1234!@cluster0.sqcy3o3.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient(MONGO_URL)
 KWIX = client.KWIX    #db 연결
 KWIX.userInfo.drop()
 
