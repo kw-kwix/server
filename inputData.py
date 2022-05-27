@@ -2,7 +2,6 @@
 
 from pymongo.mongo_client import MongoClient
 import pandas as pd
-import os
 from config import MONGO_URL
 
 # pandas to mongodb
