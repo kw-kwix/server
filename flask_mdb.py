@@ -37,11 +37,8 @@ def login():
     if request.method == 'POST':
         data = request.get_json()
         email = data['email']
-        print(data)
-        print(email)
         pw = data['password']
         user = list(KWIX.loginInfo.find({'email': email}))
-        print(user)
         if len(user) == 0:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
             return jsonify(message="이메일 주소가 없습니다."), 403
         elif user[0]['password'] == pw:
@@ -63,12 +60,10 @@ def input():
         if not(userInfo['age'] and userInfo['height'] and userInfo['weight']):
             return jsonify(message="정보를 모두 입력하세요."), 403
         else:
-            print(userInfo)
             user['age'] = userInfo['age']
             user['height'] = userInfo['height']
             user['weight'] = userInfo['weight']
             id = KWIX.loginInfo.find_one({'email': userInfo["email"]})["id"]
-            print(KWIX.loginInfo.find_one({'email': userInfo["email"]}))
             KWIX.userInfo.update_one({'id': id}, {'$set': user})
             return jsonify(message="success"), 200
 
