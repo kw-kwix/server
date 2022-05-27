@@ -5,12 +5,10 @@ from wsgiref.util import request_uri
 import os
 
 app=Flask(__name__)
-# conn=MongoClient('localhost', 27017)
 
 app.secret_key=b'aaa!111'
 
 mongodb_url = os.environ.get("mongodb_url")
-print(type(mongodb_url))
 client = MongoClient(mongodb_url)  
 KWIX = client.KWIX  #db 접근
 
