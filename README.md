@@ -1,5 +1,19 @@
 # server
 
+## Command
+
+### Install
+
+```shell
+pip install -r requirements.txt
+```
+
+### Start
+
+```shell
+python flask_mdb.py
+```
+
 ---
 ## table
 - loginInfo : 로그인과 관련된 정보 저장
