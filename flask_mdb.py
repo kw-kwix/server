@@ -19,7 +19,7 @@ def mainpage():
 
 
 @app.route("/sign_up", methods=['POST', 'GET'])     #회원가입
-def register():
+def sign_up():
     error=None
     userid = session.get('email',None)
     if request.method == 'GET':
@@ -28,40 +28,20 @@ def register():
         else:
             return Response(jsonify({"status" : 200}), 200)
     if request.method == 'POST':
-        user={}
         userInfo={'id' : None, 'height' : None, 'weight' : None, 'sex' : None, 'age' : None, 'bmi' : None, 'during' : None}
-            
-        #userInfo={'age': None, 'sex' : None, 'height' : None, 'weight': None, 'part' : None}    #userInfo(table)에 저장할 데이터
-        user['name']=request.form.get('NameInput')
-        user['birthdayDate']=request.form.get('BirthInput')
-        user['sex']=request.form.get('inlineRadioOptions')
-        user['id']=request.form.get('IdInput')
-        user['password']=request.form.get('pwInput')
-        user['Email']=request.form.get('EmailInput')
-        user['phoneNumber']=request.form.get('PhoneInput')
-        # 
+        user = request.get_json()       
         userInfo['id']=user['id']
         userInfo['sex'] = user['sex']
-        if user['sex'] == 'male':
-            userInfo['sex'] = 1
-        else:
-            userInfo['sex'] = 0
-        userInfo['exercise_level']=request.form.get('exercise_level')
-        print(user)
-        #conn=mgf.connect_mongo(db='web')    #mongodb 접속
-        if not(user['name'] and user['sex'] and user['id'] and user['password'] and user['Email'] and user['phoneNumber'] and userInfo['exercise_level']):
-            return Response(jsonify({"status" : 403}), 403)
-        #elif len(list(mgf.get_many_data(conn, 'web', 'loginInfo', {'id' : user['id']}))) != 0:
+        if not(user['name'] and user['id'] and user['birthdayDate'] and user['password'] and user['email'] and user['phoneNumber']):
+            return Response(jsonify({"status": 403}), 403)
         elif len(list(KWIX.loginInfo.find({'id' : user['id']}))) != 0:
-            return Response(jsonify({"status" : 403}), 403)
-        elif len(list(KWIX.loginInfo.find({'Email' : user['Email']}))) != 0:
-            return Response(jsonify({"status" : 403}), 403)
+            return Response(jsonify({"status": 403}), 403)
+        elif len(list(KWIX.loginInfo.find({'email' : user['email']}))) != 0:
+            return Response(jsonify({"status": 403}), 403)
         else:
-            #mgf.insert_one_data(conn, 'web', 'loginInfo', user)     #회원가입에 필요한 정보를 loginInfo(table)에 저장
-            #mgf.insert_one_data(conn, 'web', 'userInfo', userInfo)      #사용자 정보를 userInfo(table)에 저장
-            KWIX.loginInfo.insert_one(user)
-            KWIX.userInfo.insert_one(userInfo)
-            return redirect('/')
+            KWIX.loginInfo.insert_one(user) #회원가입에 필요한 정보를 loginInfo(table)에 저장
+            KWIX.userInfo.insert_one(userInfo)  #사용자 정보를 userInfo(table)에 저장
+            return jsonify(message="success"), 200
 
 
 @app.route('/login', methods=['POST', 'GET'])  # 로그인
@@ -73,7 +53,6 @@ def login():
         else:
             return Response(jsonify({"status": 200}), 200)
     if request.method == 'POST':
-        # if request.is_json():
         data = request.get_json()
         email = data['email']
         print(data)
@@ -88,29 +67,6 @@ def login():
             return jsonify(message="success"), 200
         else:
             return Response(jsonify({"status": 403}), 403)
-
-
-# @app.route('/login', methods=['POST', 'GET'])       #로그인
-# def login():
-#     userid = session.get('email',None)
-#     if request.method == 'GET':
-#         if userid is not None:
-#             return redirect('/')
-#         else:
-#             return Response(jsonify({"status" : 200}), 200)
-#     if request.method == 'POST':
-#         if request.is_json():
-#             data = request.get_json()
-#             email = data['email']
-#             pw = data['password']
-#             user=list(KWIX.loginInfo.find({'Email' : email}))
-#             if len(user) == 0:      #loginInfo(table)에 동일한 email이 존재하지 않는다면
-#                 return Response(jsonify({"status" : 403}), 403)
-#             elif user[0]['password']==pw:
-#                 session['email']=email      #로그인 성공 시 session에 email 저장
-#                 return redirect('/')
-#             else:
-#                 return Response(jsonify({"status" : 403}), 403)
 
     
 @app.route('/logout')       #로그아웃
@@ -147,10 +103,7 @@ def input():
         if not(userInfo['age'] and userInfo['height'] and userInfo['weight'] and userInfo['exercise_level']):
             return Response(jsonify({"status" : 403}), 403)
         else:
-            #conn=mgf.connect_mongo(db='web')    #mongodb와 연결
-            #user=list(mgf.get_many_data(conn, 'web', 'loginInfo', {'Email' : userid}))      #userInfo(table)에서 동일한 Email에 해당하는 데이터 받기
             user=list(KWIX.loginInfo.find({'Email' : userid}))
-            #conn.web.userInfo.update_one({'id' : user[0]['id']},{'$set':userInfo})      #받은 데이터의 id에 해당하는 데이터 업데이트
             KWIX.userInfo.update_one({'id' : user[0]['id']},{'$set':userInfo})
             return redirect('/recommend')
 
