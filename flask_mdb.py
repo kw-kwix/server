@@ -3,10 +3,10 @@ from pymongo.mongo_client import MongoClient
 from wsgiref.util import request_uri
 import os
 from config import MONGO_URL
-
+from flask_cors import CORS
 
 app=Flask(__name__)
-
+CORS(app)
 app.secret_key=b'aaa!111'
 
 client = MongoClient(MONGO_URL)  
