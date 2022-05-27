@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, Response, jsonify
 from pymongo.mongo_client import MongoClient
 from config import MONGO_URL
 from flask_cors import CORS
+import mongo
 
 app = Flask(__name__)
 CORS(app)
@@ -21,14 +22,14 @@ def sign_up():
         userInfo['sex'] = user['sex']
         if not(user['name'] and user['id'] and user['birthdayDate'] and user['password'] and user['email'] and user['phoneNumber']):
             return jsonify(message="정보가 부족합니다."), 403
-        elif len(list(KWIX.loginInfo.find({'id': user['id']}))) != 0:
+        elif mongo.find_user_id(KWIX, userInfo['id']) is not None:
             return jsonify(message="이미 있는 id입니다."), 403
-        elif len(list(KWIX.loginInfo.find({'email': user['email']}))) != 0:
+        elif mongo.find_login_info(KWIX, user['email']) is not None:
             return jsonify(message="이미 있는 email입니다."), 403
         else:
             # 회원가입에 필요한 정보를 loginInfo(table)에 저장
-            KWIX.loginInfo.insert_one(user)
-            KWIX.userInfo.insert_one(userInfo)  # 사용자 정보를 userInfo(table)에 저장
+            mongo.create_login_info(KWIX, user)
+            mongo.create_user_info(KWIX, userInfo)
             return jsonify(message="success"), 200
 
 
@@ -38,10 +39,10 @@ def login():
         data = request.get_json()
         email = data['email']
         pw = data['password']
-        user = list(KWIX.loginInfo.find({'email': email}))
-        if len(user) == 0:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
+        user = mongo.find_login_info(KWIX, email)
+        if user is None:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
             return jsonify(message="이메일 주소가 없습니다."), 403
-        elif user[0]['password'] == pw:
+        elif user['password'] == pw:
             return jsonify(message="success"), 200
         else:
             return jsonify(message="비밀번호가 틀렸습니다."), 403
@@ -65,8 +66,8 @@ def input():
             user['age'] = userInfo['age']
             user['height'] = userInfo['height']
             user['weight'] = userInfo['weight']
-            id = KWIX.loginInfo.find_one({'email': userInfo["email"]})["id"]
-            KWIX.userInfo.update_one({'id': id}, {'$set': user})
+            id = mongo.find_login_info(KWIX, userInfo["email"])["id"]
+            mongo.update_user_info(KWIX, id, user)
             return jsonify(message="success"), 200
 
 
