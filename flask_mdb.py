@@ -33,11 +33,11 @@ def sign_up():
         userInfo['id'] = user['id']
         userInfo['sex'] = user['sex']
         if not(user['name'] and user['id'] and user['birthdayDate'] and user['password'] and user['email'] and user['phoneNumber']):
-            return Response(jsonify({"status": 403}), 403)
+            return jsonify(message="정보가 부족합니다."), 403
         elif len(list(KWIX.loginInfo.find({'id': user['id']}))) != 0:
-            return Response(jsonify({"status": 403}), 403)
+            return jsonify(message="이미 있는 id입니다."), 403
         elif len(list(KWIX.loginInfo.find({'email': user['email']}))) != 0:
-            return Response(jsonify({"status": 403}), 403)
+            return jsonify(message="이미 있는 email입니다."), 403
         else:
             # 회원가입에 필요한 정보를 loginInfo(table)에 저장
             KWIX.loginInfo.insert_one(user)
@@ -62,12 +62,12 @@ def login():
         user = list(KWIX.loginInfo.find({'email': email}))
         print(user)
         if len(user) == 0:  # loginInfo(table)에 동일한 email이 존재하지 않는다면
-            return Response(jsonify({"status": 403}), 403)
+            return jsonify(message="이메일 주소가 없습니다."), 403
         elif user[0]['password'] == pw:
             session['email'] = email  # 로그인 성공 시 session에 email 저장
             return jsonify(message="success"), 200
         else:
-            return Response(jsonify({"status": 403}), 403)
+            return jsonify(message="비밀번호가 틀렸습니다."), 403
 
 
 @app.route('/logout')  # 로그아웃
