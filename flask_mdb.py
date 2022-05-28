@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, Response, jsonify
+from flask import Flask, request, jsonify
 from pymongo.mongo_client import MongoClient
 from config import MONGO_URL
 from flask_cors import CORS
