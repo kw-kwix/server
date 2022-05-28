@@ -43,7 +43,7 @@ def get_excercise_list():
    return np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]])
 
 
-def recommend(user_input):
+def recommend(user_input) -> np.ndarray:
    exercise_list = get_excercise_list()
 
    user_input[1] = scalered_height(user_input[1])
