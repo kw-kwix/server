@@ -3,6 +3,7 @@ from pymongo.mongo_client import MongoClient
 from config import MONGO_URL
 from flask_cors import CORS
 import mongo
+import model
 
 app = Flask(__name__)
 CORS(app)
@@ -71,10 +72,25 @@ def input():
             return jsonify(message="success"), 200
 
 
-@app.route('/recommend')  # recommend.html과 연결
+@app.route('/recommend', methods=['POST'])
 def recommend():
-    if request.method == 'GET':
-        return Response(jsonify({"status": 200}), 200)
+    """Recommend API
+
+    Request Body
+    {
+        "email": "example@example.com"
+    }
+
+    Returns:
+        _type_: _description_
+    """
+    if request.method == 'POST':
+        userInfo = request.get_json()
+        email = userInfo["email"]
+        user_id = mongo.find_login_info(KWIX, email)["id"]
+        user_input = mongo.get_user(KWIX, user_id)[0]
+        result = model.recommend(user_input)
+        return jsonify(result=result.tolist())
 
 
 if __name__ == '__main__':
