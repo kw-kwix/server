@@ -18,6 +18,7 @@ def scalered_sex(sex):
 def scalered_age(age):
    return (int(age)-30)/30
 
+
 def scalered_bmi(bmi):
    return (int(bmi)-30)/30
 
@@ -26,15 +27,15 @@ def scalered_proficiency(proficiency):
    return (int(proficiency)/3)
 
 
-def input_data(height, weight, sex,age, bmi, proficiency):
-    return np.array([height, weight, sex, age,bmi, proficiency])
+def input_data(height, weight, sex, age, bmi, proficiency):
+    return np.array([height, weight, sex, age, bmi, proficiency])
 
 
 def predict(x):
 
    model: Model = load_model("chest_model.h5")
    y = model.predict(x)
-   y= np.around(y.flatten(),3)
+   y = np.around(y.flatten(), 3)
    return y
 
 
