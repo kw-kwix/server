@@ -1,6 +1,7 @@
 from keras.models import load_model, Model
 import numpy as np
-import db
+import mongo
+
 
 def scalered_height(height):
     return (int(height)-170)/30
@@ -36,13 +37,13 @@ def predict(x):
    y= np.around(y.flatten(),3)
    return y
 
-if __name__=="__main__":
 
-   id = input("id:")
-   user_input = db.get_user(id)[0]
-   print(user_input)
+def get_excercise_list():
+   return np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]])
 
-   exercise_list = np.array([[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]])
+
+def recommend(user_input):
+   exercise_list = get_excercise_list()
 
    user_input[1] = scalered_height(user_input[1])
    user_input[2] = scalered_weight(user_input[2])
@@ -51,4 +52,18 @@ if __name__=="__main__":
    user_input[5] = scalered_bmi(user_input[5])
    user_input[6] = scalered_proficiency(user_input[6])
 
-   print(predict([np.array([input_data(user_input[1],user_input[2],user_input[3],user_input[4],user_input[5],user_input[6])]),exercise_list]))
+   return predict([np.array([input_data(user_input[1], user_input[2], user_input[3],
+                                        user_input[4], user_input[5], user_input[6])]), exercise_list])
+
+
+if __name__ == "__main__":
+   from pymongo.mongo_client import MongoClient
+   from config import MONGO_URL
+
+   client = MongoClient(MONGO_URL)
+   KWIX = client.KWIX
+
+   id = input("id:")
+   user_input = mongo.get_user(KWIX, id)[0]
+   result = recommend(user_input)
+   print(result)
