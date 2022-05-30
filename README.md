@@ -1,5 +1,7 @@
 # server
 
+- [API](docs/api.md)
+
 ## Command
 
 ### Install
