@@ -14,6 +14,21 @@ pip install -r requirements.txt
 python flask_mdb.py
 ```
 
+### Docker
+
+- use docker
+
+```shell
+docker build -t .
+docker run -dp 5000:5000 server
+```
+
+- use docker-compose
+
+```shell
+docker-compose up -d --build
+```
+
 ---
 ## table
 - loginInfo : 로그인과 관련된 정보 저장
