@@ -1,15 +1,19 @@
-from flask import Flask, jsonify
+from flask import jsonify
 from pymongo.mongo_client import MongoClient
 from config import MONGO_URL
 from flask_cors import CORS
 from flask_pydantic import validate
+from flask_openapi3 import Info
+from flask_openapi3 import OpenAPI
 import mongo
 import model
 from models.user import UserBodyModel
 from models.auth import LoginBodyModel, SignUpBodyModel
 from models.recommend import RecommendBodyModel
 
-app = Flask(__name__)
+info = Info(title='KWIX Recommend API', version='1.0.0')
+app = OpenAPI(__name__, info=info)
+
 CORS(app)
 app.secret_key = b'aaa!111'
 
@@ -17,7 +21,7 @@ client = MongoClient(MONGO_URL)
 KWIX = client.KWIX  # db 접근
 
 
-@app.route("/sign_up", methods=['POST', 'GET'])  # 회원가입
+@app.post("/sign_up")  # 회원가입
 @validate()
 def sign_up(body: SignUpBodyModel):
     userInfo = {'id': None, 'height': None, 'weight': None,
@@ -37,7 +41,7 @@ def sign_up(body: SignUpBodyModel):
         return jsonify(message="success"), 200
 
 
-@app.route('/login', methods=['POST'])  # 로그인
+@app.post('/login')  # 로그인
 @validate()
 def login(body: LoginBodyModel):
     user = mongo.find_login_info(KWIX, body.email)
@@ -49,12 +53,12 @@ def login(body: LoginBodyModel):
         return jsonify(message="비밀번호가 틀렸습니다."), 403
 
 
-@app.route('/logout')  # 로그아웃
+@app.get('/logout')  # 로그아웃
 def logout():
     return jsonify(message="success"), 200
 
 
-@app.route("/input", methods=['POST'])  # 유저 정보를 받음
+@app.post("/input")  # 유저 정보를 받음
 @validate()
 def input(body: UserBodyModel):
     user = {}
@@ -71,19 +75,9 @@ def input(body: UserBodyModel):
         return jsonify(message="success"), 200
 
 
-@app.route('/recommend', methods=['POST'])
+@app.post('/recommend')
 @validate()
 def recommend(body: RecommendBodyModel):
-    """Recommend API
-
-    Request Body
-    {
-        "email": "example@example.com"
-    }
-
-    Returns:
-        _type_: _description_
-    """
     user_id = mongo.find_login_info(KWIX, body.email)["id"]
     user_input = mongo.get_user(KWIX, user_id)[0]
     result = model.recommend(user_input)
