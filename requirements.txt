@@ -5,3 +5,4 @@ flask-cors
 tensorflow
 python-dotenv
 Flask-Pydantic
+flask-openapi3
