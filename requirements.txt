@@ -4,6 +4,8 @@ pymongo[srv]
 flask-cors
 tensorflow
 python-dotenv
+Flask-Pydantic
+flask-openapi3
 pandas
 gunicorn
 numpy
