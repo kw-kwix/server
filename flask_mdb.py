@@ -7,7 +7,7 @@ from flask_openapi3 import Info
 from flask_openapi3 import OpenAPI
 import mongo
 import model
-from models.user import UserBodyModel
+from models.user import UserBodyModel, UserResModel
 from models.auth import LoginBodyModel, SignUpBodyModel
 from models.recommend import RecommendBodyModel
 
@@ -82,6 +82,23 @@ def recommend(body: RecommendBodyModel):
     user_input = mongo.get_user(KWIX, user_id)[0]
     result = model.recommend(user_input)
     return jsonify(result=result.tolist())
+
+
+@app.post("/user")
+@validate()
+def get_user(body: RecommendBodyModel):
+    login_info = mongo.find_login_info(KWIX, body.email)
+    id = login_info["id"]
+    user_info = mongo.get_user_info(KWIX, id)
+    return UserResModel(
+        id=id,
+        email=login_info["email"],
+        name=login_info["name"],
+        height=user_info["height"],
+        weight=user_info["weight"],
+        sex=user_info["sex"],
+        age=user_info["age"]
+    )
 
 
 if __name__ == '__main__':
