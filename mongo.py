@@ -35,3 +35,7 @@ def get_user(db: Database, user_id):
                'age', 'bmi', 'during']].to_numpy()
 
     return data
+
+
+def get_user_info(db: Database, user_id):
+    return db.userInfo.find_one({'id': user_id})
