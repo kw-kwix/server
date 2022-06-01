@@ -78,8 +78,13 @@ def input(body: UserBodyModel):
 @app.post('/recommend')
 @validate()
 def recommend(body: RecommendBodyModel):
+    if not body.email:
+        return jsonify(message="로그인이 필요합니다.")
     user_id = mongo.find_login_info(KWIX, body.email)["id"]
     user_input = mongo.get_user(KWIX, user_id)[0]
+    user_info = mongo.get_user_info(KWIX, user_id)
+    if not(user_info["age"] and user_info["height"] and user_info["weight"]):
+        return jsonify(message="등록된 정보가 없습니다."), 403
     result = model.recommend(user_input)
     return jsonify(result=result.tolist())
 
