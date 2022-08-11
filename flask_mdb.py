@@ -68,8 +68,12 @@ def input(body: UserBodyModel):
         return jsonify(message="로그인이 필요합니다."), 403
     else:
         user['age'] = body.age
+        user['sex'] = body.sex
         user['height'] = body.height
         user['weight'] = body.weight
+        user['bmi'] = body.bmi
+        user['during'] = body.during
+        
         id = mongo.find_login_info(KWIX, body.email)["id"]
         mongo.update_user_info(KWIX, id, user)
         return jsonify(message="success"), 200
@@ -102,7 +106,10 @@ def get_user(body: RecommendBodyModel):
         height=user_info["height"],
         weight=user_info["weight"],
         sex=user_info["sex"],
-        age=user_info["age"]
+        age=user_info["age"],
+        bmi=user_info["bmi"],
+        during=user_info["during"]
+        
     )
 
 
