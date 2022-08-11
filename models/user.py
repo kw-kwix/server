@@ -3,9 +3,13 @@ from pydantic import BaseModel
 
 class UserBodyModel(BaseModel):
     age: int
+    sex: int
     height: int
     weight: int
     email: str
+    bmi: int
+    during: int
+    
 
 
 class UserResModel(BaseModel):
@@ -16,3 +20,7 @@ class UserResModel(BaseModel):
     weight: int
     sex: int
     age: int
+    during: int
+    bmi: int
+    
+
