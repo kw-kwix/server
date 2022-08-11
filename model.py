@@ -23,12 +23,12 @@ def scalered_bmi(bmi):
    return (int(bmi)-30)/30
 
 
-def scalered_proficiency(proficiency):
-   return (int(proficiency)/3)
+def scalered_during(during):
+   return (int(during)/3)
 
 
-def input_data(height, weight, sex, age, bmi, proficiency):
-    return np.array([height, weight, sex, age, bmi, proficiency])
+def input_data(height, weight, sex, age, bmi, during):
+    return np.array([height, weight, sex, age, bmi, during])
 
 
 def predict(x):
@@ -51,7 +51,7 @@ def recommend(user_input) -> np.ndarray:
    user_input[3] = scalered_sex(user_input[3])
    user_input[4] = scalered_age(user_input[4])
    user_input[5] = scalered_bmi(user_input[5])
-   user_input[6] = scalered_proficiency(user_input[6])
+   user_input[6] = scalered_during(user_input[6])
 
    return predict([np.array([input_data(user_input[1], user_input[2], user_input[3],
                                         user_input[4], user_input[5], user_input[6])]), exercise_list])
