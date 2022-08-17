@@ -14,7 +14,7 @@ from models.recommend import RecommendBodyModel
 info = Info(title='KWIX Recommend API', version='1.0.0')
 app = OpenAPI(__name__, info=info)
 
-CORS(app)
+CORS(app, resources={r"*":{"origins":"https://kwix.netlify.app"}})
 app.secret_key = b'aaa!111'
 
 client = MongoClient(MONGO_URL)
