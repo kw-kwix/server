@@ -150,6 +150,21 @@
 | during | integer | True |  |
 
 
+### UserResModel
+| name | type | required | description |
+| ---- | ---- | -------- | ----------- |
+| email | string | True |  |
+| name | string | True |  |
+| id | string | True |  |
+| height | integer | True |  |
+| weight | integer | True |  |
+| sex | interger | True |  |
+| age | integer | True |  |
+| bmi | integer | True |  |
+| during | integer | True |  |
+
+
+
 ### RecommendBodyModel
 
 | name | type | required | description |
