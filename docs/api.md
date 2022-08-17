@@ -74,9 +74,14 @@
 | name | type | required | description |
 | ---- | ---- | -------- | ----------- |
 | age | integer | True |  |
+| sex | interger | True |  |
 | height | integer | True |  |
 | weight | integer | True |  |
+| bmi | interger | True |  |
+| during | interger | True |  |
 | email | string | True |  |
+
+
 
 
 
@@ -137,9 +142,12 @@
 | name | type | required | description |
 | ---- | ---- | -------- | ----------- |
 | age | integer | True |  |
+| sex | interger | True |  |
 | height | integer | True |  |
 | weight | integer | True |  |
 | email | string | True |  |
+| bmi | integer | True |  |
+| during | integer | True |  |
 
 
 ### RecommendBodyModel
