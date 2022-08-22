@@ -14,7 +14,7 @@ from models.recommend import RecommendBodyModel
 info = Info(title='KWIX Recommend API', version='1.0.0')
 app = OpenAPI(__name__, info=info)
 
-CORS(app, resources={r"*":{"origins":"*"}})
+CORS(app, resources={r"*": {"origins": "*"}})
 app.secret_key = b'aaa!111'
 
 client = MongoClient(MONGO_URL)
@@ -73,7 +73,8 @@ def input(body: UserBodyModel):
         user['weight'] = body.weight
         user['bmi'] = body.bmi
         user['during'] = body.during
-        
+        user["fitbitClientId"] = body.fitbitClientId
+
         id = mongo.find_login_info(KWIX, body.email)["id"]
         mongo.update_user_info(KWIX, id, user)
         return jsonify(message="success"), 200
@@ -99,6 +100,8 @@ def get_user(body: RecommendBodyModel):
     login_info = mongo.find_login_info(KWIX, body.email)
     id = login_info["id"]
     user_info = mongo.get_user_info(KWIX, id)
+    if user_info.get("fitbitClientId") == None:
+        user_info["fitbitClientId"] = ""
     return UserResModel(
         id=id,
         email=login_info["email"],
@@ -108,8 +111,8 @@ def get_user(body: RecommendBodyModel):
         sex=user_info["sex"],
         age=user_info["age"],
         bmi=user_info["bmi"],
-        during=user_info["during"]
-        
+        during=user_info["during"],
+        fitbitClientId=user_info["fitbitClientId"]
     )
 
 

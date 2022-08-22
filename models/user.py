@@ -9,7 +9,7 @@ class UserBodyModel(BaseModel):
     email: str
     bmi: int
     during: int
-    
+    fitbitClientId: str
 
 
 class UserResModel(BaseModel):
@@ -22,5 +22,4 @@ class UserResModel(BaseModel):
     age: int
     during: int
     bmi: int
-    
-
+    fitbitClientId: str
